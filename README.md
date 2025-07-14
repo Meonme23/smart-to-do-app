@@ -1,6 +1,6 @@
  Smart To-Do App 📝
 
-A beginner-friendly to-do list web application built using HTML, CSS, and JavaScript. This project is perfect for anyone starting out in front-end development and looking to demonstrate practical skills with modern browser features.
+A beginner-friendly to-do list web app built with HTML, CSS, and JavaScript — perfect for showcasing foundational front-end skills and practical browser-based features.
 
 Smart To-Do Demo Screenshot(https://github.com/Meonme23/smart-to-do-app/blob/main/Screenshot%202025-07-14%20070504.png)
 
