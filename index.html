@@ -1,0 +1,29 @@
+#### `index.html`
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart To-Do</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>📝 Smart To-Do</h1>
+      <button id="theme-toggle">🌙</button>
+    </header>
+
+    <form id="todo-form">
+      <input type="text" id="task-input" placeholder="Enter new task..." required />
+      <input type="date" id="due-date" />
+      <button type="submit">Add Task</button>
+    </form>
+
+    <ul id="task-list"></ul>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

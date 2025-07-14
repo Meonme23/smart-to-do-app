@@ -1,0 +1,46 @@
+ `style.css`
+```css
+body {
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f4f4f4;
+  color: #333;
+  transition: background 0.3s, color 0.3s;
+}
+body.dark {
+  background: #121212;
+  color: #f0f0f0;
+}
+.app {
+  max-width: 600px;
+  margin: auto;
+  padding: 2rem;
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#todo-form {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+#task-list {
+  list-style: none;
+  padding: 0;
+}
+.task {
+  display: flex;
+  justify-content: space-between;
+  background: #fff;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  transition: transform 0.2s;
+}
+.task.dragging {
+  opacity: 0.5;
+  transform: scale(1.02);
+}
