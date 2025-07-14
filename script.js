@@ -1,4 +1,4 @@
-// Updated script.js with drag & drop, edit, and tags
+// Updated script.js with drag & drop, edit, tags, filter, and progress bar
 
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('todo-form');
@@ -7,10 +7,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const taskList = document.getElementById('task-list');
   const themeToggle = document.getElementById('theme-toggle');
 
+  const filter = document.createElement('select');
+  filter.id = 'category-filter';
+  filter.innerHTML = '<option value="all">All Categories</option>';
+  form.insertAdjacentElement('beforebegin', filter);
+
+  const progress = document.createElement('div');
+  progress.id = 'progress-container';
+  progress.innerHTML = '<div id="progress-bar"><div id="progress-fill"></div></div>';
+  form.insertAdjacentElement('afterend', progress);
+
   let draggedItem = null;
 
-  const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
-  savedTasks.forEach(addTaskToDOM);
+  let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+  renderTasks();
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -18,9 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const due = dueDateInput.value;
     const category = prompt("Enter a category/tag for this task (optional):") || '';
     if (text) {
-      const task = { text, due, category };
-      addTaskToDOM(task);
-      saveTask(task);
+      const task = { text, due, category, completed: false };
+      tasks.push(task);
+      saveTasks();
+      renderTasks();
       taskInput.value = '';
       dueDateInput.value = '';
     }
@@ -30,10 +41,35 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.classList.toggle('dark-mode');
   });
 
+  filter.addEventListener('change', renderTasks);
+
+  function renderTasks() {
+    taskList.innerHTML = '';
+    const selectedCategory = filter.value;
+    const categories = new Set();
+
+    tasks.forEach(task => categories.add(task.category));
+    filter.innerHTML = '<option value="all">All Categories</option>';
+    categories.forEach(cat => {
+      if (cat) {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        filter.appendChild(opt);
+      }
+    });
+
+    tasks.filter(t => selectedCategory === 'all' || t.category === selectedCategory)
+      .forEach(task => addTaskToDOM(task));
+
+    updateProgress();
+  }
+
   function addTaskToDOM(task) {
     const li = document.createElement('li');
     li.draggable = true;
     li.innerHTML = `
+      <input type="checkbox" ${task.completed ? 'checked' : ''} />
       <span><strong>${task.text}</strong> ${task.due ? '(' + task.due + ')' : ''} <span class="category">${task.category}</span></span>
       <span>
         <button class="edit-btn">✏️</button>
@@ -42,16 +78,24 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
     taskList.appendChild(li);
 
+    li.querySelector('input[type="checkbox"]').addEventListener('change', e => {
+      task.completed = e.target.checked;
+      saveTasks();
+      updateProgress();
+    });
+
     li.querySelector('.delete-btn').addEventListener('click', () => {
-      li.remove();
-      removeTask(task.text);
+      tasks = tasks.filter(t => t !== task);
+      saveTasks();
+      renderTasks();
     });
 
     li.querySelector('.edit-btn').addEventListener('click', () => {
       const newText = prompt("Edit task text:", task.text);
       if (newText) {
         task.text = newText;
-        updateTasks();
+        saveTasks();
+        renderTasks();
       }
     });
 
@@ -63,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
     li.addEventListener('dragend', () => {
       draggedItem = null;
       li.classList.remove('dragging');
-      updateTasks();
+      updateTasksFromDOM();
     });
 
     li.addEventListener('dragover', (e) => e.preventDefault());
@@ -75,27 +119,29 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function saveTask(task) {
-    const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-    tasks.push(task);
-    localStorage.setItem('tasks', JSON.stringify(tasks));
-  }
-
-  function removeTask(taskText) {
-    let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-    tasks = tasks.filter(t => t.text !== taskText);
-    localStorage.setItem('tasks', JSON.stringify(tasks));
-  }
-
-  function updateTasks() {
+  function updateTasksFromDOM() {
     const lis = taskList.querySelectorAll('li');
     const newTasks = [];
     lis.forEach(li => {
       const text = li.querySelector('strong').textContent;
       const category = li.querySelector('.category')?.textContent || '';
       const dueMatch = li.textContent.match(/\((\d{4}-\d{2}-\d{2})\)/);
-      newTasks.push({ text, due: dueMatch ? dueMatch[1] : '', category });
+      const completed = li.querySelector('input[type="checkbox"]').checked;
+      newTasks.push({ text, due: dueMatch ? dueMatch[1] : '', category, completed });
     });
-    localStorage.setItem('tasks', JSON.stringify(newTasks));
+    tasks = newTasks;
+    saveTasks();
+    updateProgress();
+  }
+
+  function saveTasks() {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }
+
+  function updateProgress() {
+    const total = tasks.length;
+    const done = tasks.filter(t => t.completed).length;
+    const percent = total > 0 ? (done / total) * 100 : 0;
+    document.getElementById('progress-fill').style.width = percent + '%';
   }
 });
