@@ -5,6 +5,24 @@ body {
   color: #333;
   transition: background 0.3s, color 0.3s;
 }
+#progress-container {
+  margin: 1rem 0;
+}
+
+#progress-bar {
+  width: 100%;
+  background-color: #eee;
+  border-radius: 5px;
+  overflow: hidden;
+  height: 20px;
+}
+
+#progress-fill {
+  height: 100%;
+  background-color: #4CAF50; /* green fill */
+  width: 0%;
+  transition: width 0.4s ease;
+}
 
 body.dark-mode {
   background-color: #121212;
