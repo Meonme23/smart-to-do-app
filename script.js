@@ -7,6 +7,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const taskList = document.getElementById('task-list');
   const themeToggle = document.getElementById('theme-toggle');
 
+  function updateProgress() {
+  const total = tasks.length;
+  const done = tasks.filter(t => t.completed).length;
+  const percent = total > 0 ? (done / total) * 100 : 0;
+  document.getElementById('progress-fill').style.width = percent + '%';
+}
+
+
   const filter = document.createElement('select');
   filter.id = 'category-filter';
   filter.innerHTML = '<option value="all">All Categories</option>';
