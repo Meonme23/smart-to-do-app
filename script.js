@@ -13,6 +13,34 @@ document.addEventListener('DOMContentLoaded', () => {
   const percent = total > 0 ? (done / total) * 100 : 0;
   document.getElementById('progress-fill').style.width = percent + '%';
 }
+function generateCalendarView() {
+  const calendar = document.getElementById('calendar-view');
+  if (!calendar) return;
+
+  calendar.innerHTML = ''; // clear previous calendar
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+
+  const start = new Date(year, month, 1);
+  const end = new Date(year, month + 1, 0);
+  const daysInMonth = end.getDate();
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const taskCount = tasks.filter(t => t.dueDate === dateStr).length;
+
+    const div = document.createElement('div');
+    div.classList.add('calendar-day');
+    if (taskCount > 0) {
+      div.classList.add('has-task');
+      div.innerHTML = `${day}<span class="task-count">${taskCount} task${taskCount > 1 ? 's' : ''}</span>`;
+    } else {
+      div.textContent = day;
+    }
+    calendar.appendChild(div);
+  }
+}
 
 
   const filter = document.createElement('select');
